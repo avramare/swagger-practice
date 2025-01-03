@@ -1,0 +1,24 @@
+# Get all users (with pagination)
+curl "http://localhost:3000/api/users?page=1&limit=2"
+
+# Get users by role
+curl "http://localhost:3000/api/users?role=admin"
+
+# Get single user
+curl http://localhost:3000/api/users/1
+
+# Create new user
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"name":"New User","email":"new@example.com"}' \
+  http://localhost:3000/api/users
+
+# Update user
+curl -X PUT -H "Content-Type: application/json" \
+  -d '{"name":"Updated Name"}' \
+  http://localhost:3000/api/users/1
+
+# Delete user
+curl -X DELETE http://localhost:3000/api/users/1
+
+# Get user's posts
+curl http://localhost:3000/api/users/1/posts

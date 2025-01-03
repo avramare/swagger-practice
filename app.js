@@ -7,17 +7,68 @@ app.use(express.json());
 
 // Dummy data store
 let users = [
-  { id: 1, name: "John Doe", email: "john@example.com", role: "user", created_at: "2024-01-01T00:00:00Z" },
-  { id: 2, name: "Jane Smith", email: "jane@example.com", role: "admin", created_at: "2024-01-02T00:00:00Z" },
-  { id: 3, name: "Bob Johnson", email: "bob@example.com", role: "user", created_at: "2024-01-03T00:00:00Z" },
-  { id: 4, name: "Alice Brown", email: "alice@example.com", role: "user", created_at: "2024-01-04T00:00:00Z" },
-  { id: 5, name: "Charlie Wilson", email: "charlie@example.com", role: "moderator", created_at: "2024-01-05T00:00:00Z" }
+  {
+    id: 1,
+    name: "John Doe",
+    email: "john@example.com",
+    role: "user",
+    created_at: "2024-01-01T00:00:00Z",
+  },
+  {
+    id: 2,
+    name: "Jane Smith",
+    email: "jane@example.com",
+    role: "admin",
+    created_at: "2024-01-02T00:00:00Z",
+  },
+  {
+    id: 3,
+    name: "Bob Johnson",
+    email: "bob@example.com",
+    role: "user",
+    created_at: "2024-01-03T00:00:00Z",
+  },
+  {
+    id: 4,
+    name: "Alice Brown",
+    email: "alice@example.com",
+    role: "user",
+    created_at: "2024-01-04T00:00:00Z",
+  },
+  {
+    id: 5,
+    name: "Charlie Wilson",
+    email: "charlie@example.com",
+    role: "moderator",
+    created_at: "2024-01-05T00:00:00Z",
+  },
 ];
 
 let posts = [
-  { id: 1, user_id: 1, title: "First Post", content: "Hello World!", status: "published", created_at: "2024-01-01T00:00:00Z" },
-  { id: 2, user_id: 1, title: "Second Post", content: "Another post", status: "draft", created_at: "2024-01-02T00:00:00Z" },
-  { id: 3, user_id: 2, title: "Welcome", content: "Introduction post", status: "published", created_at: "2024-01-03T00:00:00Z" }
+  {
+    id: 1,
+    user_id: 1,
+    title: "First Post",
+    content: "Hello World!",
+    status: "published",
+    created_at: "2024-01-01T00:00:00Z",
+  },
+  {
+    id: 2,
+    user_id: 1,
+    title: "Second Post",
+    content: "Another post",
+    status: "draft",
+    created_at: "2024-01-02T00:00:00Z",
+  },
+  {
+    id: 3,
+    user_id: 2,
+    title: "Welcome",
+    content: "Introduction post",
+    status: "published",
+    created_at: "2024-01-03T00:00:00Z",
+  },
 ];
 
 // Swagger configuration
@@ -27,7 +78,8 @@ const swaggerOptions = {
     info: {
       title: "Enhanced Sample API",
       version: "1.0.0",
-      description: "An enhanced sample API with realistic endpoints and Swagger documentation",
+      description:
+        "An enhanced sample API with realistic endpoints and Swagger documentation",
     },
     servers: [
       {
@@ -116,27 +168,30 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  *                       type: integer
  */
 app.get("/api/users", (req, res) => {
+  // Pagination
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
+  // Filtering
   const role = req.query.role;
-
   let filteredUsers = [...users];
   if (role) {
-    filteredUsers = filteredUsers.filter(user => user.role === role);
+    filteredUsers = filteredUsers.filter((user) => user.role === role);
   }
 
+  // Pagination logic
   const startIndex = (page - 1) * limit;
   const endIndex = startIndex + limit;
   const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
-
+  
+  // Metadata in response
   res.json({
     data: paginatedUsers,
     pagination: {
       total: filteredUsers.length,
       pages: Math.ceil(filteredUsers.length / limit),
       current_page: page,
-      per_page: limit
-    }
+      per_page: limit,
+    },
   });
 });
 
@@ -159,7 +214,7 @@ app.get("/api/users", (req, res) => {
  *         description: User not found
  */
 app.get("/api/users/:id", (req, res) => {
-  const user = users.find(u => u.id === parseInt(req.params.id));
+  const user = users.find((u) => u.id === parseInt(req.params.id));
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
@@ -198,7 +253,7 @@ app.post("/api/users", (req, res) => {
     name,
     email,
     role,
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
   };
   users.push(newUser);
   res.status(201).json(newUser);
@@ -236,8 +291,8 @@ app.post("/api/users", (req, res) => {
  */
 app.put("/api/users/:id", (req, res) => {
   const userId = parseInt(req.params.id);
-  const userIndex = users.findIndex(u => u.id === userId);
-  
+  const userIndex = users.findIndex((u) => u.id === userId);
+
   if (userIndex === -1) {
     return res.status(404).json({ error: "User not found" });
   }
@@ -245,7 +300,7 @@ app.put("/api/users/:id", (req, res) => {
   const updatedUser = {
     ...users[userIndex],
     ...req.body,
-    id: userId  // Ensure ID doesn't change
+    id: userId, // Ensure ID doesn't change
   };
 
   users[userIndex] = updatedUser;
@@ -271,8 +326,8 @@ app.put("/api/users/:id", (req, res) => {
  */
 app.delete("/api/users/:id", (req, res) => {
   const userId = parseInt(req.params.id);
-  const userIndex = users.findIndex(u => u.id === userId);
-  
+  const userIndex = users.findIndex((u) => u.id === userId);
+
   if (userIndex === -1) {
     return res.status(404).json({ error: "User not found" });
   }
@@ -300,13 +355,13 @@ app.delete("/api/users/:id", (req, res) => {
  */
 app.get("/api/users/:id/posts", (req, res) => {
   const userId = parseInt(req.params.id);
-  const user = users.find(u => u.id === userId);
-  
+  const user = users.find((u) => u.id === userId);
+
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
 
-  const userPosts = posts.filter(post => post.user_id === userId);
+  const userPosts = posts.filter((post) => post.user_id === userId);
   res.json(userPosts);
 });
 
